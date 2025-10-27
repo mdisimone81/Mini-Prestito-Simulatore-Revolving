@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M.D.S. System - Contatti</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+      background: #f8fafc;
+      min-height: 100vh;
+      color: #1f2937;
+    }
+
+    /* Header con logo e navigazione integrata */
+    .header-nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: #1e3a8a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .logo h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .nav-btn.active {
+      background: #1e3a8a;
+      color: white;
+    }
+
+    .nav-btn:not(.active) {
+      color: #64748b;
+      background: transparent;
+    }
+
+    .nav-btn:not(.active):hover {
+      background: #f1f5f9;
+      color: #1e3a8a;
+    }
+
+    .nav-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 60px 24px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #1e3a8a;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      color: #64748b;
+      margin-bottom: 24px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    /* Container principale */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    .contact-form {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-form::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: #1e3a8a;
+    }
+
+    .contact-form h2 {
+      color: #1f2937;
+      font-size: 1.875rem;
+      margin-bottom: 24px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #374151;
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 0.875rem;
+    }
+
+    .contact-form input, 
+    .contact-form textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      background: white;
+      font-family: inherit;
+      color: #1f2937;
+    }
+
+    .contact-form input:focus, 
+    .contact-form textarea:focus {
+      outline: none;
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+
+    .contact-form textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .contact-form button {
+      width: 100%;
+      background: #1e3a8a;
+      color: white;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .contact-form button:hover {
+      background: #1e40af;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+    }
+
+    .contact-form button:active {
+      transform: translateY(0);
+    }
+
+    /* Sezione informazioni aggiuntive */
+    .contact-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 60px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .info-card {
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+      transition: all 0.2s ease;
+    }
+
+    .info-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-icon {
+      width: 48px;
+      height: 48px;
+      background: #eff6ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: #1e3a8a;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .info-card h3 {
+      color: #1f2937;
+      margin-bottom: 12px;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .info-card p {
+      color: #64748b;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      background: white;
+      color: #64748b;
+      text-align: center;
+      padding: 32px 24px;
+      margin-top: 80px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    footer p {
+      margin-bottom: 8px;
+      font-size: 0.875rem;
+    }
+
+    footer strong {
+      color: #dc2626;
+      font-weight: 600;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 16px;
+      }
+      
+      .nav-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .hero h2 {
+        font-size: 2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+      
+      .contact-form {
+        padding: 24px;
+        margin: 0 16px;
+      }
+      
+      .contact-form h2 {
+        font-size: 1.5rem;
+      }
+      
+      .contact-info {
+        grid-template-columns: 1fr;
+        margin: 40px 16px 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 40px 24px 30px;
+      }
+      
+      .hero h2 {
+        font-size: 1.75rem;
+      }
+      
+      .nav-btn {
+        padding: 8px 12px;
+        font-size: 0.875rem;
+      }
+      
+      .contact-form {
+        padding: 20px;
+      }
+
+      .info-card {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header-nav">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">MDS</div>
+        <h1>M.D.S. System</h1>
+      </div>
+      <div class="nav-buttons">
+        <a href="index.html" class="nav-btn">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9,22 9,12 15,12 15,22"/>
+          </svg>
+          Home
+        </a>
+        <a href="simulatore.html" class="nav-btn">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Simulatore
+        </a>
+        <a href="contatti.html" class="nav-btn active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          Contatti
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h2>Contattaci</h2>
+    <p>Siamo qui per rispondere alle tue domande e fornirti il supporto di cui hai bisogno</p>
+  </div>
+
+  <div class="container">
+    <div class="contact-form">
+      <h2>Modulo di Contatto</h2>
+      <form id="contactForm">
+        <div class="form-group">
+          <label for="name">Nome e Cognome</label>
+          <input type="text" id="name" placeholder="Inserisci il tuo nome completo" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Indirizzo Email</label>
+          <input type="email" id="email" placeholder="Inserisci la tua email" required>
+        </div>
+        <div class="form-group">
+          <label for="message">Messaggio</label>
+          <textarea id="message" rows="5" placeholder="Scrivi il tuo messaggio qui..." required></textarea>
+        </div>
+        <button type="submit">Invia Messaggio</button>
+      </form>
+    </div>
+
+    <div class="contact-info">
+      <div class="info-card">
+        <div class="info-icon">📧</div>
+        <h3>Email</h3>
+        <p>Scrivici per qualsiasi domanda o richiesta di informazioni sui nostri strumenti finanziari</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">⚡</div>
+        <h3>Risposta Rapida</h3>
+        <p>Ti risponderemo entro 24 ore lavorative per fornirti il supporto necessario</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🔒</div>
+        <h3>Privacy e Sicurezza</h3>
+        <p>I tuoi dati sono protetti e trattati con massima riservatezza secondo le normative vigenti</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Developed by M.D.S. System</p>
+    <p><strong>Questo simulatore è uno strumento a scopo educativo. I risultati forniti non garantiscono l'assoluta precisione dei calcoli e non sostituiscono una consulenza professionale. Lo sviluppatore non si assume alcuna responsabilità.</strong></p>
+  </footer>
+
+  <script>
+    document.getElementById("contactForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      alert("Grazie per averci contattato! Ti risponderemo al più presto.");
+      document.getElementById("contactForm").reset();
+    });
+  </script>
+</body>
+</html>
+

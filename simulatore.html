@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulatore Carta di Credito Revolving</title>
+  <style>
+    /* 
+    RIFERIMENTO BANCA D'ITALIA (II Trimestre 2025 - Valido per IV Trimestre 2025):
+    - TAEG medio credito revolving: 15,52%
+    - Tasso soglia usura: 23,40%
+    Fonte: Comunicato Stampa Banca d'Italia del 30 settembre 2025
+    */
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #ffffff;
+      min-height: 100vh;
+      padding: 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+      background: #1a1a1a;
+      color: #e5e5e5;
+    }
+
+    body.dark-mode .card {
+      background: #2d2d2d;
+      border-color: #404040;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    body.dark-mode .card-title,
+    body.dark-mode .section-title {
+      color: #ffffff;
+    }
+
+    body.dark-mode .card-description,
+    body.dark-mode .result-label,
+    body.dark-mode .form-group label,
+    body.dark-mode .teaser-form-group label {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .form-group input,
+    body.dark-mode .teaser-form-group input {
+      background: #1a1a1a;
+      border-color: #404040;
+      color: #e5e5e5;
+    }
+
+    body.dark-mode .form-group input:focus,
+    body.dark-mode .teaser-form-group input:focus {
+      border-color: #4a90e2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+    }
+
+    body.dark-mode .teaser-section {
+      background: #252525;
+      border-color: #404040;
+    }
+
+    body.dark-mode .teaser-title {
+      color: #ffffff;
+    }
+
+    body.dark-mode .teaser-info {
+      background: #1a1a1a;
+      border-color: #404040;
+    }
+
+    body.dark-mode .teaser-info p {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .note {
+      background: #252525;
+      border-color: #404040;
+    }
+
+    body.dark-mode .note strong {
+      color: #ffffff;
+    }
+
+    body.dark-mode .note p {
+      color: #b0b0b0;
+    }
+
+    body.dark-mode .result-box {
+      background: #252525;
+      border-color: #404040;
+    }
+
+    body.dark-mode .result-box.highlight {
+      background: #1e3a5f;
+      border-color: #4a90e2;
+    }
+
+    body.dark-mode .result-box.teaser-highlight {
+      background: #1e3d2f;
+      border-color: #22c55e;
+    }
+
+    body.dark-mode .result-value {
+      color: #ffffff;
+    }
+
+    body.dark-mode table {
+      border-color: #404040;
+    }
+
+    body.dark-mode table th {
+      background: #1a1a1a;
+      color: #ffffff;
+    }
+
+    body.dark-mode table td {
+      border-color: #404040;
+      color: #e5e5e5;
+      background: #2d2d2d;
+    }
+
+    body.dark-mode table tbody tr:nth-child(even) {
+      background-color: #252525;
+    }
+
+    body.dark-mode table tbody tr:hover {
+      background-color: #1e3a5f;
+    }
+
+    body.dark-mode .disclaimer {
+      color: #b0b0b0;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .header-controls {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+
+    .dark-mode-toggle {
+      background: #f3f4f6;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dark-mode-toggle:hover {
+      background: #e5e7eb;
+    }
+
+    body.dark-mode .dark-mode-toggle {
+      background: #374151;
+      border-color: #4b5563;
+      color: #e5e5e5;
+    }
+
+    body.dark-mode .dark-mode-toggle:hover {
+      background: #4b5563;
+    }
+    
+    .card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    
+    .card-header {
+      margin-bottom: 25px;
+      border-bottom: 2px solid #f3f4f6;
+      padding-bottom: 15px;
+    }
+    
+    .card-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 8px;
+      transition: color 0.3s ease;
+    }
+    
+    .card-description {
+      color: #6b7280;
+      font-size: 15px;
+      transition: color 0.3s ease;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 15px;
+      transition: all 0.2s;
+      background: #ffffff;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 12px;
+    }
+    
+    .btn-primary {
+      background-color: #1f2937;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: #111827;
+      box-shadow: 0 2px 8px rgba(31, 41, 55, 0.3);
+    }
+    
+    .btn-reset {
+      background-color: #dc2626;
+      color: white;
+    }
+    
+    .btn-reset:hover {
+      background-color: #b91c1c;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    }
+    
+    .btn-blue {
+      background-color: #1f2937;
+      color: white;
+    }
+    
+    .btn-blue:hover {
+      background-color: #111827;
+      box-shadow: 0 2px 8px rgba(31, 41, 55, 0.3);
+    }
+    
+    .btn-red {
+      background-color: #dc2626;
+      color: white;
+    }
+    
+    .btn-red:hover {
+      background-color: #b91c1c;
+      box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    }
+    
+    .teaser-section {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 25px;
+      margin-bottom: 25px;
+      position: relative;
+      overflow: hidden;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    
+    .promo-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #f59e0b;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .teaser-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .teaser-icon {
+      width: 32px;
+      height: 32px;
+      background: #2563eb;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    
+    .teaser-title {
+      color: #1f2937;
+      font-size: 18px;
+      font-weight: 700;
+      transition: color 0.3s ease;
+    }
+    
+    .teaser-info {
+      background: #ffffff;
+      border-left: 3px solid #2563eb;
+      border: 1px solid #e5e7eb;
+      border-left: 3px solid #2563eb;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    
+    .teaser-info p {
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+      transition: color 0.3s ease;
+    }
+    
+    .teaser-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .teaser-form-group label {
+      color: #374151;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+    
+    .teaser-form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 15px;
+      background: #ffffff;
+      transition: all 0.2s;
+    }
+    
+    .teaser-form-group input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .note {
+      background: #f9fafb;
+      border-left: 3px solid #2563eb;
+      border: 1px solid #e5e7eb;
+      border-left: 3px solid #2563eb;
+      padding: 15px;
+      border-radius: 6px;
+      margin-top: 20px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    
+    .note strong {
+      color: #1f2937;
+      display: block;
+      margin-bottom: 8px;
+      transition: color 0.3s ease;
+    }
+    
+    .note p {
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.6;
+      transition: color 0.3s ease;
+    }
+    
+    .results {
+      display: none;
+    }
+    
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .result-box {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .result-box.highlight {
+      background: #eff6ff;
+      border-color: #2563eb;
+    }
+    
+    .result-box.teaser-highlight {
+      background: #f0fdf4;
+      border-color: #22c55e;
+    }
+    
+    .result-label {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: color 0.3s ease;
+    }
+    
+    .result-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1f2937;
+      transition: color 0.3s ease;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #2563eb;
+      transition: color 0.3s ease;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 20px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      overflow: hidden;
+      transition: border-color 0.3s ease;
+    }
+    
+    table th {
+      background: #374151;
+      color: white;
+      padding: 14px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background-color 0.3s ease;
+    }
+    
+    table td {
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+      color: #374151;
+      transition: all 0.3s ease;
+    }
+    
+    table tbody tr:nth-child(even) {
+      background-color: #f9fafb;
+    }
+    
+    table tbody tr:hover {
+      background-color: #eff6ff;
+    }
+    
+    .disclaimer {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      text-align: center;
+      color: #000000;
+      font-weight: bold;
+      font-style: italic;
+      font-size: 14px;
+      line-height: 1.6;
+      transition: color 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .card-title {
+        font-size: 22px;
+      }
+
+      .card-description {
+        font-size: 14px;
+      }
+
+      .form-group label,
+      .teaser-form-group label {
+        font-size: 13px;
+      }
+
+      .form-group input,
+      .teaser-form-group input {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+
+      .btn {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .teaser-section {
+        padding: 15px;
+      }
+
+      .teaser-title {
+        font-size: 16px;
+      }
+
+      .teaser-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .result-box {
+        padding: 15px;
+      }
+
+      .result-label {
+        font-size: 11px;
+      }
+
+      .result-value {
+        font-size: 20px;
+      }
+
+      .section-title {
+        font-size: 16px;
+      }
+
+      table th {
+        padding: 10px 6px;
+        font-size: 11px;
+      }
+
+      table td {
+        padding: 8px 4px;
+        font-size: 12px;
+      }
+
+      .disclaimer {
+        font-size: 12px;
+        padding: 15px;
+      }
+
+      .dark-mode-toggle {
+        font-size: 13px;
+        padding: 6px 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card-title {
+        font-size: 20px;
+      }
+
+      .result-value {
+        font-size: 18px;
+      }
+
+      table th {
+        font-size: 10px;
+        padding: 8px 4px;
+      }
+
+      table td {
+        font-size: 11px;
+        padding: 6px 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-controls">
+      <button class="dark-mode-toggle" id="darkModeToggle">
+        <span id="darkModeIcon">🌙</span>
+        <span id="darkModeText">Dark Mode</span>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Simulatore Carta di Credito Revolving</div>
+        <div class="card-description">Calcola il piano di ammortamento della tua carta revolving</div>
+      </div>
+      
+      <form id="calculatorForm">
+        <div class="form-group">
+          <label for="creditLine">Linea di credito (€)</label>
+          <input type="number" id="creditLine" min="0" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="balance">Saldo presente (€)</label>
+          <input type="number" id="balance" min="0" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="monthlyPayment">Rata mensile (€)</label>
+          <input type="number" id="monthlyPayment" min="0" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="annualRate">TAN (%)</label>
+          <input type="number" id="annualRate" min="0" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="initialStatement">COSTI DI GESTIONE PRATICA (€)</label>
+          <input type="number" id="initialStatement" min="0" max="99.99" step="0.01" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="additionalCosts">Costi aggiuntivi annuali (€)</label>
+          <input type="number" id="additionalCosts" min="0" step="0.01" value="0">
+        </div>
+        
+        <div class="teaser-section">
+          <div class="promo-badge">PROMO</div>
+          
+          <div class="teaser-header">
+            <div class="teaser-icon">🎯</div>
+            <div class="teaser-title">TEASER - OFFERTA PROMOZIONALE</div>
+          </div>
+          
+          <div class="teaser-info">
+            <p>💡 Esempi di teaser comuni: 3,90% per 6 mesi; 7,90% per 6 mesi; 1% per 3 mesi; 9,90% per 6 mesi. Lascia vuoti i campi per calcolare senza teaser.</p>
+          </div>
+          
+          <div class="teaser-grid">
+            <div class="teaser-form-group">
+              <label for="teaserMonths">📅 Mesi di durata teaser</label>
+              <input type="number" id="teaserMonths" min="0" step="1" placeholder="es. 6">
+            </div>
+            
+            <div class="teaser-form-group">
+              <label for="teaserRate">🏷️ TAN scontato teaser (%)</label>
+              <input type="number" id="teaserRate" min="0" step="0.01" placeholder="es. 3,90">
+            </div>
+          </div>
+          
+          <button type="button" class="btn btn-blue" id="calculateTeaserBtn">⚡ CALCOLA SCONTO</button>
+          <button type="button" class="btn btn-red" id="disableTeaserBtn">❌ DISATTIVA TEASER</button>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Calcola</button>
+        <button type="button" class="btn btn-reset" id="resetButton">Azzera</button>
+      </form>
+    </div>
+
+    <div id="results" class="results">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Risultati della Simulazione</div>
+        </div>
+        
+        <div class="section-title">RIEPILOGO COMPLETO DEL PIANO DI AMMORTAMENTO</div>
+        
+        <div class="results-grid">
+          <div class="result-box highlight">
+            <div class="result-label">TAEG</div>
+            <div class="result-value" id="taegValue">-</div>
+          </div>
+          
+          <div class="result-box highlight">
+            <div class="result-label">Interessi Totali</div>
+            <div class="result-value" id="totalInterest">-</div>
+          </div>
+          
+          <div class="result-box highlight">
+            <div class="result-label">Costo Totale</div>
+            <div class="result-value" id="totalCost">-</div>
+          </div>
+          
+          <div class="result-box highlight">
+            <div class="result-label">Credito Residuo</div>
+            <div class="result-value" id="remainingCredit">-</div>
+          </div>
+          
+          <div class="result-box">
+            <div class="result-label">Numero Rate Piano Base</div>
+            <div class="result-value" id="totalPayments">-</div>
+          </div>
+          
+          <div class="result-box">
+            <div class="result-label">Rate Ancora da Pagare</div>
+            <div class="result-value" id="remainingPayments">-</div>
+          </div>
+        </div>
+        
+        <div id="teaserResults" style="display: none;">
+          <div class="section-title">📊 DETTAGLI OFFERTA TEASER</div>
+          <div class="results-grid">
+            <div class="result-box teaser-highlight">
+              <div class="result-label">Sconto TAN Applicato</div>
+              <div class="result-value" id="teaserDiscount">-</div>
+            </div>
+            
+            <div class="result-box teaser-highlight">
+              <div class="result-label">Rate Risparmiate</div>
+              <div class="result-value" id="paymentsSaved">-</div>
+            </div>
+            
+            <div class="result-box teaser-highlight">
+              <div class="result-label">Risparmio Totale</div>
+              <div class="result-value" id="totalSavings">-</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section-title">TABELLA DETTAGLIATA DELLE RATE</div>
+        <div class="table-wrapper">
+          <table id="paymentsTable">
+            <thead>
+              <tr>
+                <th>Numero Rata</th>
+                <th>Interessi (€)</th>
+                <th>Quota Capitale (€)</th>
+                <th>Principale (€)</th>
+                <th>Debito Residuo (€)</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    DISCLAIMER: Questo simulatore è uno strumento a scopo educativo pensato per offrire un supporto orientativo nella gestione finanziaria. I risultati forniti non garantiscono l'assoluta precisione dei calcoli e non sostituiscono una consulenza professionale qualificata. Lo sviluppatore non si assume nessuna responsabilità.
+  </div>
+
+  <script>
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const darkModeIcon = document.getElementById('darkModeIcon');
+    const darkModeText = document.getElementById('darkModeText');
+
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark-mode');
+      darkModeIcon.textContent = '☀️';
+      darkModeText.textContent = 'Light Mode';
+    }
+
+    darkModeToggle.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      
+      if (document.body.classList.contains('dark-mode')) {
+        darkModeIcon.textContent = '☀️';
+        darkModeText.textContent = 'Light Mode';
+        localStorage.setItem('darkMode', 'enabled');
+      } else {
+        darkModeIcon.textContent = '🌙';
+        darkModeText.textContent = 'Dark Mode';
+        localStorage.setItem('darkMode', 'disabled');
+      }
+    });
+    
+    let teaserActive = false;
+    let teaserData = { months: 0, rate: 0 };
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(value);
+    }
+
+    function formatPercentage(value) {
+      return new Intl.NumberFormat("it-IT", { style: "percent", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value / 100);
+    }
+
+    function calculateAPR(annualRate, balance, monthlyPayment, initialStatement, additionalCosts, paymentPeriods) {
+      const totalCostOfCredit = (monthlyPayment * paymentPeriods) - balance + initialStatement + additionalCosts;
+      let monthlyRate = annualRate / 100 / 12;
+      const additionalCostFactor = (initialStatement + additionalCosts) / balance;
+      const regulatoryFactor = 1.05;
+      const calculatedAPR = ((1 + monthlyRate) ** 12 - 1) * 100 * (1 + additionalCostFactor) * regulatoryFactor;
+      return Math.round(calculatedAPR * 100) / 100;
+    }
+
+    function calculatePaymentCount(balance, monthlyPayment, annualRate, initialStatement, useTeaserRate = false) {
+      const monthlyRate = annualRate / 100 / 12;
+      let debt = balance - initialStatement;
+      let paymentNumber = 0;
+
+      const initialInterest = debt * monthlyRate;
+      if (monthlyPayment <= initialInterest) {
+        return null;
+      }
+
+      while (debt > 0 && paymentNumber < 1000) {
+        paymentNumber++;
+        
+        let currentRate = monthlyRate;
+        if (useTeaserRate && teaserActive && paymentNumber <= teaserData.months) {
+          currentRate = teaserData.rate / 100 / 12;
+        }
+        
+        const interest = debt * currentRate;
+        let principal = monthlyPayment - interest;
+
+        if (principal > debt) {
+          principal = debt;
+        }
+
+        debt -= principal;
+      }
+
+      return paymentNumber;
+    }
+
+    function calculatePayments(values) {
+      const monthlyRate = values.annualRate / 100 / 12;
+      let debt = values.balance - values.initialStatement;
+      let totalInterest = 0;
+      const payments = [];
+      let paymentNumber = 0;
+
+      const initialInterest = debt * monthlyRate;
+      if (values.monthlyPayment <= initialInterest) {
+        alert("Attenzione: La rata mensile è troppo bassa per coprire gli interessi. Il debito non potrà mai essere estinto.");
+        return null;
+      }
+
+      while (debt > 0) {
+        paymentNumber++;
+        
+        let currentRate = monthlyRate;
+        if (teaserActive && paymentNumber <= teaserData.months) {
+          currentRate = teaserData.rate / 100 / 12;
+        }
+        
+        const interest = debt * currentRate;
+        let principal = values.monthlyPayment - interest;
+
+        if (principal > debt) {
+          principal = debt;
+        }
+
+        debt -= principal;
+        totalInterest += interest;
+
+        payments.push({
+          number: paymentNumber,
+          interest,
+          principal,
+          remainingDebt: debt,
+        });
+        
+        if (paymentNumber > 1000) {
+          alert("Attenzione: Il calcolo è stato interrotto poiché richiede più di 1000 rate. Verificare i parametri inseriti.");
+          break;
+        }
+      }
+
+      const taeg = calculateAPR(
+        values.annualRate, 
+        values.balance, 
+        values.monthlyPayment,
+        values.initialStatement,
+        values.additionalCosts,
+        paymentNumber
+      );
+
+      const basePlanPayments = calculatePaymentCount(
+        values.creditLine, 
+        values.monthlyPayment, 
+        values.annualRate, 
+        values.initialStatement,
+        false
+      );
+
+      return {
+        remainingCredit: values.creditLine - values.balance + values.initialStatement,
+        totalPayments: paymentNumber,
+        basePlanPayments: basePlanPayments,
+        totalInterest,
+        totalCost: values.balance + totalInterest + values.initialStatement + values.additionalCosts,
+        payments,
+        taeg
+      };
+    }
+
+    function calculateWithoutTeaser(values) {
+      const tempTeaserActive = teaserActive;
+      teaserActive = false;
+      const result = calculatePayments(values);
+      teaserActive = tempTeaserActive;
+      return result;
+    }
+
+    function displayResults(result, values) {
+      document.getElementById("remainingCredit").textContent = formatCurrency(result.remainingCredit);
+      document.getElementById("totalPayments").textContent = result.basePlanPayments || result.totalPayments;
+      document.getElementById("remainingPayments").textContent = result.totalPayments;
+      document.getElementById("totalInterest").textContent = formatCurrency(result.totalInterest);
+      document.getElementById("totalCost").textContent = formatCurrency(result.totalCost);
+      document.getElementById("taegValue").textContent = formatPercentage(result.taeg);
+
+      if (teaserActive) {
+        const resultWithoutTeaser = calculateWithoutTeaser(values);
+        if (resultWithoutTeaser) {
+          const paymentsSaved = resultWithoutTeaser.totalPayments - result.totalPayments;
+          const totalSavings = resultWithoutTeaser.totalInterest - result.totalInterest;
+          const teaserDiscount = values.annualRate - teaserData.rate;
+          
+          document.getElementById("teaserDiscount").textContent = formatPercentage(teaserDiscount);
+          document.getElementById("paymentsSaved").textContent = paymentsSaved;
+          document.getElementById("totalSavings").textContent = formatCurrency(totalSavings);
+          document.getElementById("teaserResults").style.display = "block";
+        }
+      } else {
+        document.getElementById("teaserResults").style.display = "none";
+      }
+
+      const tableBody = document.querySelector("#paymentsTable tbody");
+      tableBody.innerHTML = "";
+      result.payments.forEach((payment) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${payment.number}</td>
+          <td>${formatCurrency(payment.interest)}</td>
+          <td>${formatCurrency(payment.principal)}</td>
+          <td>${formatCurrency(payment.principal)}</td>
+          <td>${formatCurrency(payment.remainingDebt)}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+      
+      document.getElementById("results").style.display = "block";
+      
+      setTimeout(() => {
+        document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+    }
+
+    function getFormValues() {
+      return {
+        creditLine: parseFloat(document.getElementById("creditLine").value),
+        balance: parseFloat(document.getElementById("balance").value),
+        monthlyPayment: parseFloat(document.getElementById("monthlyPayment").value),
+        annualRate: parseFloat(document.getElementById("annualRate").value),
+        initialStatement: parseFloat(document.getElementById("initialStatement").value),
+        additionalCosts: parseFloat(document.getElementById("additionalCosts").value || 0),
+      };
+    }
+
+    function validateFormFields() {
+      const form = document.getElementById("calculatorForm");
+      return form.checkValidity();
+    }
+
+    document.getElementById("calculatorForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const values = getFormValues();
+      const result = calculatePayments(values);
+      if (!result) return;
+
+      displayResults(result, values);
+    });
+
+    document.getElementById("calculatorForm").addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && e.target.tagName !== "BUTTON") {
+        e.preventDefault();
+        document.getElementById("calculatorForm").dispatchEvent(new Event("submit"));
+      }
+    });
+
+    document.getElementById("calculateTeaserBtn").addEventListener("click", function() {
+      const months = parseInt(document.getElementById("teaserMonths").value);
+      const rate = parseFloat(document.getElementById("teaserRate").value);
+      
+      if (!months || !rate || months <= 0 || rate <= 0) {
+        alert("Inserisci valori validi per il teaser (mesi e TAN scontato)");
+        return;
+      }
+      
+      if (!validateFormFields()) {
+        alert("Compila tutti i campi obbligatori prima di calcolare lo sconto");
+        return;
+      }
+      
+      teaserActive = true;
+      teaserData = { months, rate };
+      
+      const values = getFormValues();
+      const result = calculatePayments(values);
+      if (!result) return;
+      
+      displayResults(result, values);
+    });
+
+    document.getElementById("disableTeaserBtn").addEventListener("click", function() {
+      teaserActive = false;
+      teaserData = { months: 0, rate: 0 };
+      document.getElementById("teaserMonths").value = "";
+      document.getElementById("teaserRate").value = "";
+      document.getElementById("teaserResults").style.display = "none";
+      
+      if (document.getElementById("results").style.display === "block") {
+        const values = getFormValues();
+        const result = calculatePayments(values);
+        if (result) {
+          displayResults(result, values);
+        }
+      }
+    });
+
+    document.getElementById("resetButton").addEventListener("click", function () {
+      document.getElementById("calculatorForm").reset();
+      document.getElementById("results").style.display = "none";
+      document.querySelector("#paymentsTable tbody").innerHTML = "";
+      teaserActive = false;
+      teaserData = { months: 0, rate: 0 };
+      document.getElementById("teaserResults").style.display = "none";
+    });
+  </script>
+</body>
+</html>

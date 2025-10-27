@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M.D.S. System - Home</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+      background: #f8fafc;
+      min-height: 100vh;
+      color: #1f2937;
+    }
+
+    /* Header con logo e navigazione integrata */
+    .header-nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: #1e3a8a;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+    }
+
+    .logo h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+    }
+
+    .nav-btn.active {
+      background: #1e3a8a;
+      color: white;
+    }
+
+    .nav-btn:not(.active) {
+      color: #64748b;
+      background: transparent;
+    }
+
+    .nav-btn:not(.active):hover {
+      background: #f1f5f9;
+      color: #1e3a8a;
+    }
+
+    .nav-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 80px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero h2 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #1e3a8a;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: #64748b;
+      margin-bottom: 40px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-btn {
+      padding: 14px 28px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .cta-btn.primary {
+      background: #1e3a8a;
+      color: white;
+    }
+
+    .cta-btn.primary:hover {
+      background: #1e40af;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+    }
+
+    .cta-btn.secondary {
+      background: white;
+      color: #64748b;
+      border: 1px solid #e5e7eb;
+    }
+
+    .cta-btn.secondary:hover {
+      background: #f8fafc;
+      border-color: #1e3a8a;
+      color: #1e3a8a;
+    }
+
+    /* Container principale */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .main-card {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+      margin-bottom: 40px;
+    }
+
+    .main-card h2 {
+      color: #1f2937;
+      font-size: 2rem;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+
+    .main-card p {
+      color: #64748b;
+      font-size: 1.125rem;
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 60px;
+    }
+
+    .feature-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e5e7eb;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: #eff6ff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      color: #1e3a8a;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .feature-card h3 {
+      color: #1f2937;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: #64748b;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      background: white;
+      color: #64748b;
+      text-align: center;
+      padding: 32px 24px;
+      margin-top: 80px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    footer p {
+      margin-bottom: 8px;
+      font-size: 0.875rem;
+    }
+
+    footer strong {
+      color: #dc2626;
+      font-weight: 600;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 16px;
+      }
+      
+      .nav-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .hero h2 {
+        font-size: 2.5rem;
+      }
+      
+      .hero p {
+        font-size: 1.125rem;
+      }
+      
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .main-card {
+        padding: 24px;
+      }
+      
+      .main-card h2 {
+        font-size: 1.75rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 60px 24px;
+      }
+      
+      .hero h2 {
+        font-size: 2rem;
+      }
+      
+      .nav-btn {
+        padding: 8px 12px;
+        font-size: 0.875rem;
+      }
+
+      .feature-card {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header-nav">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">MDS</div>
+        <h1>M.D.S. System</h1>
+      </div>
+      <div class="nav-buttons">
+        <a href="index.html" class="nav-btn active">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9,22 9,12 15,12 15,22"/>
+          </svg>
+          Home
+        </a>
+        <a href="simulatore.html" class="nav-btn">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Simulatore
+        </a>
+        <a href="contatti.html" class="nav-btn">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          Contatti
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h2>Soluzioni Finanziarie<br>Professionali</h2>
+    <p>Strumento professionale per l'analisi e la simulazione di prodotti finanziari. Progettato per offrire supporto orientativo nella gestione finanziaria con interfaccia intuitiva.</p>
+    <div class="cta-buttons">
+      <a href="simulatore.html" class="cta-btn primary">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/>
+          <line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+        Accedi al Simulatore
+      </a>
+      <a href="contatti.html" class="cta-btn secondary">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        Contattaci
+      </a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="main-card">
+      <h2>Benvenuto in M.D.S. System</h2>
+      <p>La nostra piattaforma offre strumenti avanzati per l'analisi finanziaria, con particolare focus sui prodotti di credito revolving. Sviluppato con tecnologie moderne per garantire facilità d'uso nei calcoli.</p>
+      <p>Esplora le funzionalità attraverso il menu di navigazione per scoprire tutti gli strumenti disponibili.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Simulatore Avanzato</h3>
+        <p>Calcolo del piano di ammortamento per carte di credito revolving con supporto per offerte teaser e analisi dettagliata dei costi.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Sicurezza e Privacy</h3>
+        <p>Tutti i calcoli vengono eseguiti localmente nel tuo browser. Nessun dato finanziario viene trasmesso o memorizzato sui nostri server.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Design Responsive</h3>
+        <p>Interfaccia ottimizzata per tutti i dispositivi, da desktop a smartphone, per un'esperienza d'uso sempre ottimale.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Developed by M.D.S. System</p>
+    <p><strong>Questo simulatore è uno strumento a scopo educativo. I risultati forniti non garantiscono l'assoluta precisione dei calcoli e non sostituiscono una consulenza professionale. Lo sviluppatore non si assume alcuna responsabilità.</strong></p>
+  </footer>
+</body>
+</html>
+
